@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "concert-led-bracelet-studio"
+version = "0.3.0"
+description = "Local HackRF control studio for compatible concert LED bracelets"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "acamporat and Concert LED Bracelet Studio contributors"}]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+
+[project.scripts]
+concert-led-bracelet = "cli:main"
+concert-led-bracelet-studio = "ui_server:main"
+# Compatibility aliases retained for existing users and scripts.
+pixmob-hackrf = "cli:main"
+pixmob-hackrf-ui = "ui_server:main"
+
+[project.optional-dependencies]
+music = ["numpy>=1.26", "sounddevice>=0.5"]
+
+[tool.setuptools]
+py-modules = ["cli", "concert_led_bracelet_studio", "concert_led_bracelet_studio_ui", "controller", "flipper_sub", "hackrf_iq", "music_sync", "pixmob_hackrf", "pixmob_protocol", "pixmob_ui", "ui_server"]
+packages = ["pixmob_ui_assets"]
+
+[tool.setuptools.package-data]
+pixmob_ui_assets = ["*.html", "*.css", "*.js", "*.png"]
+
+[tool.setuptools.exclude-package-data]
+"*" = ["__pycache__/*", "*.pyc"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

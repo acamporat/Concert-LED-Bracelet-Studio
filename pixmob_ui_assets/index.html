@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Concert LED Bracelet Studio</title>
+    <link rel="stylesheet" href="/app.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-cluster">
+          <div class="brand">Concert LED Bracelet Studio</div>
+          <nav class="mode-switch" aria-label="Studio mode">
+            <button type="button" id="mode-flow-button" class="mode-button selected" aria-pressed="true">Flow Builder</button>
+            <button type="button" id="mode-music-button" class="mode-button" aria-pressed="false">Music Mode</button>
+          </nav>
+        </div>
+        <div class="hardware-strip" aria-label="RF configuration">
+          <div class="hardware-item">
+            <span class="status-dot" id="hardware-dot" aria-hidden="true"></span>
+            <span id="hardware-name">HackRF One</span>
+          </div>
+          <div class="hardware-item"><strong id="frequency-label">915.000 MHz</strong></div>
+          <div class="hardware-item"><strong id="gain-label">0 dB</strong></div>
+        </div>
+      </header>
+
+      <div class="app-mode" id="flow-mode">
+      <main class="flow-workspace">
+        <aside class="library-panel panel" aria-labelledby="library-heading">
+          <div class="panel-heading"><h1 id="library-heading">Block Library</h1></div>
+          <label class="search-field">
+            <span class="sr-only">Search blocks</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+            <input id="block-search" type="search" placeholder="Search blocks…" autocomplete="off">
+          </label>
+          <div class="block-library" id="block-library">
+            <button class="library-block" type="button" draggable="true" data-block-type="color">
+              <span class="block-icon color-icon" aria-hidden="true"></span>
+              <span><strong>Color</strong><small>Set band color</small></span><span class="drag-dots" aria-hidden="true">⠿</span>
+            </button>
+            <button class="library-block" type="button" draggable="true" data-block-type="fade">
+              <span class="block-icon fade-icon" aria-hidden="true"></span>
+              <span><strong>Fade</strong><small>Fade to color</small></span><span class="drag-dots" aria-hidden="true">⠿</span>
+            </button>
+            <button class="library-block" type="button" draggable="true" data-block-type="wait">
+              <span class="block-icon wait-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v5l3 2"></path></svg></span>
+              <span><strong>Wait</strong><small>Delay the flow</small></span><span class="drag-dots" aria-hidden="true">⠿</span>
+            </button>
+            <button class="library-block" type="button" draggable="true" data-block-type="loop">
+              <span class="block-icon loop-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 8a7 7 0 1 0 1 7"></path><path d="m18 4 .2 4.2L14 8"></path></svg></span>
+              <span><strong>Loop</strong><small>Repeat nested blocks</small></span><span class="drag-dots" aria-hidden="true">⠿</span>
+            </button>
+            <button class="library-block" type="button" draggable="true" data-block-type="wake">
+              <span class="block-icon wake-icon" aria-hidden="true"><span></span></span>
+              <span><strong>Wake</strong><small>Wake sleeping receivers</small></span><span class="drag-dots" aria-hidden="true">⠿</span>
+            </button>
+            <button class="library-block" type="button" draggable="true" data-block-type="off">
+              <span class="block-icon off-icon" aria-hidden="true"></span>
+              <span><strong>Off</strong><small>Turn the band off</small></span><span class="drag-dots" aria-hidden="true">⠿</span>
+            </button>
+          </div>
+          <p class="library-help">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.1"></path></svg>
+            Drag blocks onto the canvas or click to add. Select a block to edit its settings.
+          </p>
+        </aside>
+
+        <section class="flow-panel panel" aria-labelledby="flow-heading">
+          <div class="panel-heading flow-heading-row">
+            <div class="flow-title"><h2 id="flow-heading">Flow Canvas</h2><span id="flow-summary">0 blocks · preview pending</span></div>
+            <div class="flow-toolbar">
+              <button type="button" class="toolbar-button" id="undo-button" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 7-5 5 5 5"></path><path d="M5 12h8a6 6 0 0 1 6 6"></path></svg>Undo</button>
+              <button type="button" class="toolbar-button danger" id="clear-flow-button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13"></path></svg>Clear</button>
+            </div>
+          </div>
+          <div class="flow-canvas" id="flow-canvas">
+            <div class="canvas-node terminal-node start-node"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z"></path></svg><strong>Start</strong></div>
+            <div class="flow-list root-flow-list" id="root-flow-list" data-drop-parent="root"></div>
+            <div class="canvas-node terminal-node end-node"><span aria-hidden="true"></span><strong>End</strong></div>
+          </div>
+        </section>
+
+        <aside class="inspector-panel panel" aria-labelledby="inspector-heading">
+          <div class="panel-heading inspector-heading-row"><h2 id="inspector-heading">Block Inspector</h2><span id="selected-kind">No selection</span></div>
+          <div class="inspector-content" id="inspector-content">
+            <div class="empty-inspector"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zM14 14h6v6h-6zM7 10v4h7"></path></svg><strong>Select a block</strong><p>Its color, timing, loop, and RF retry settings will appear here.</p></div>
+          </div>
+        </aside>
+      </main>
+
+      <section class="command-dock" aria-label="Flow preview and transmit controls">
+        <div class="activity-panel dock-panel">
+          <div class="dock-heading"><h2>Activity Log</h2><button type="button" class="text-button" id="clear-log">Clear</button></div>
+          <div id="log-output" class="log-output" role="log" aria-live="polite"></div>
+        </div>
+        <div class="preview-panel dock-panel">
+          <div class="dock-heading">
+            <div><h2>Preview Flow <span>(passive)</span></h2><small id="preview-summary">No RF transmission occurs</small></div>
+            <button type="button" class="preview-flow-button" id="preview-flow-button">Preview</button>
+          </div>
+          <div class="flow-timeline" aria-label="Passive flow duration preview"><svg id="timeline-svg" viewBox="0 0 1000 110" preserveAspectRatio="none" role="img" aria-label="Flow timeline"><path class="timeline-axis" d="M0 90 H1000"></path><g id="timeline-segments"></g></svg></div>
+          <p class="passive-note"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.1"></path></svg>Preview is always safe and passive. RF retries improve reception; loops repeat visible flow actions.</p>
+        </div>
+        <div class="arm-panel dock-panel">
+          <div class="dock-heading"><h2>RF Transmit <span>(explicit arm required)</span></h2></div>
+          <label class="tx-gain-control" for="tx-gain-slider">
+            <span><strong>TX Gain</strong><output id="tx-gain-output" for="tx-gain-slider">0 dB</output></span>
+            <input id="tx-gain-slider" type="range" min="0" max="47" step="1" value="0" aria-label="TX Gain" disabled>
+          </label>
+          <label class="arm-switch-row"><span class="switch"><input id="arm-toggle" type="checkbox" disabled><span class="switch-track" aria-hidden="true"></span></span><strong>Arm RF transmit</strong></label>
+          <p id="arm-help">Disabled by server</p>
+        </div>
+        <div class="run-panel dock-panel">
+          <div class="dock-heading"><h2>Run Flow</h2></div>
+          <button type="button" class="run-flow-button" id="run-flow-button" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z"></path></svg>Run Flow</button>
+          <p id="run-help">Arm RF transmit to enable.</p>
+        </div>
+      </section>
+      </div>
+
+      <section class="app-mode music-mode" id="music-mode" hidden aria-labelledby="music-mode-heading">
+        <h1 class="sr-only" id="music-mode-heading">Music Mode</h1>
+        <main class="music-workspace">
+          <aside class="panel music-source-panel" aria-labelledby="music-source-heading">
+            <div class="panel-heading"><h2 id="music-source-heading">Audio Source</h2></div>
+            <div class="music-source-content">
+              <div class="music-status-block">
+                <strong>Status</strong>
+                <span class="music-signal"><span class="status-dot offline" id="music-signal-dot"></span><span id="music-signal-label">Monitor stopped</span></span>
+                <div class="level-meter" aria-label="Audio input level"><span id="music-meter-fill"></span></div>
+                <div class="meter-labels"><span>−60</span><span>−20</span><span>−6</span><span>0 dB</span></div>
+              </div>
+              <label class="music-field"><span>Device</span><select id="music-device"><option>Loading audio inputs…</option></select></label>
+              <div class="source-facts"><span>Sample Rate</span><strong id="music-sample-rate">—</strong></div>
+              <button type="button" class="monitor-button" id="music-monitor-button">Start Passive Monitor</button>
+              <p class="music-info-note">Audio is analyzed locally. Passive monitoring never transmits RF.</p>
+            </div>
+          </aside>
+
+          <section class="panel music-live-panel" aria-labelledby="music-live-heading">
+            <div class="panel-heading music-live-heading"><div><h2 id="music-live-heading">Live Audio</h2><span id="music-live-state">Waiting for monitor</span></div></div>
+            <div class="waveform-stage">
+              <svg viewBox="0 0 1000 220" preserveAspectRatio="none" role="img" aria-label="Live audio waveform">
+                <path class="waveform-grid" d="M0 55H1000M0 110H1000M0 165H1000M100 0V220M200 0V220M300 0V220M400 0V220M500 0V220M600 0V220M700 0V220M800 0V220M900 0V220"></path>
+                <path id="music-waveform" class="music-waveform" d="M0 110 H1000"></path>
+              </svg>
+            </div>
+            <div class="music-analysis-grid">
+              <div class="spectrum-panel music-subpanel">
+                <h3>Spectrum</h3>
+                <div class="spectrum-bars">
+                  <div><span class="spectrum-bar bass" id="music-bass-bar"></span><strong>Bass</strong></div>
+                  <div><span class="spectrum-bar mid" id="music-mid-bar"></span><strong>Mid</strong></div>
+                  <div><span class="spectrum-bar treble" id="music-treble-bar"></span><strong>Treble</strong></div>
+                </div>
+              </div>
+              <div class="current-color-panel music-subpanel">
+                <h3>Current Color</h3>
+                <div class="music-color-preview" id="music-color-preview"></div>
+                <strong id="music-color-label">#000000</strong>
+              </div>
+              <div class="music-readouts">
+                <div class="music-readout"><span>BPM</span><strong id="music-bpm">—</strong></div>
+                <div class="music-readout"><span>Energy</span><strong id="music-energy">0%</strong></div>
+                <div class="music-readout"><span>Beats</span><strong id="music-beat-count">0</strong></div>
+              </div>
+            </div>
+            <div class="music-history"><h3>Beat History</h3><div id="music-history-dots"></div></div>
+          </section>
+
+          <aside class="panel music-settings-panel" aria-labelledby="music-settings-heading">
+            <div class="panel-heading"><h2 id="music-settings-heading">Reactive Settings</h2></div>
+            <div class="music-settings-content">
+              <label class="music-field"><span>Palette</span><select id="music-palette"><option value="spectrum">Spectrum</option><option value="neon">Neon</option><option value="warm">Warm</option><option value="cool">Cool</option></select></label>
+              <label class="music-setting-slider"><span><strong>Sensitivity</strong><output id="music-sensitivity-output">70%</output></span><small>How readily bass transients count as beats.</small><input id="music-sensitivity" type="range" min="1" max="100" value="70"></label>
+              <label class="music-setting-slider"><span><strong>Brightness</strong><output id="music-brightness-output">80%</output></span><small>Maximum wristband color brightness.</small><input id="music-brightness" type="range" min="1" max="100" value="80"></label>
+              <label class="music-setting-slider"><span><strong>Minimum RF Interval</strong><output id="music-interval-output">1000 ms</output></span><small>Rate limit between beat transmissions.</small><input id="music-interval" type="range" min="300" max="2000" step="50" value="1000"></label>
+              <p class="music-info-note">Lower intervals feel faster but may reduce HackRF USB reliability. Start at 1000 ms on Windows.</p>
+            </div>
+          </aside>
+        </main>
+
+        <section class="music-command-dock" aria-label="Music monitoring and transmit controls">
+          <div class="dock-panel music-activity-panel"><div class="dock-heading"><h2>Activity Log</h2><button type="button" class="text-button" id="music-clear-log">Clear</button></div><div id="music-log-output" class="log-output" role="log" aria-live="polite"></div></div>
+          <div class="dock-panel music-monitor-panel"><div class="dock-heading"><h2>Passive Monitor <span id="music-monitor-badge">Stopped</span></h2></div><strong id="music-monitor-state">No audio monitor running</strong><p id="music-monitor-detail">Choose an input and start passive monitoring.</p></div>
+          <div class="dock-panel music-rf-panel"><div class="dock-heading"><h2>RF Transmit <span>(explicit arm required)</span></h2></div><label class="tx-gain-control" for="music-tx-gain-slider"><span><strong>TX Gain</strong><output id="music-tx-gain-output" for="music-tx-gain-slider">0 dB</output></span><input id="music-tx-gain-slider" type="range" min="0" max="47" step="1" value="0" aria-label="Music TX Gain" disabled></label><label class="arm-switch-row"><span class="switch"><input id="music-arm-toggle" type="checkbox" disabled><span class="switch-track" aria-hidden="true"></span></span><strong>Arm RF transmit</strong></label></div>
+          <div class="dock-panel music-start-panel"><div class="dock-heading"><h2>Start Music Sync</h2></div><button type="button" class="music-start-button" id="music-start-button" disabled>Start Music Sync</button><p id="music-start-help">Start the passive monitor, then arm RF.</p></div>
+        </section>
+      </section>
+
+      <footer class="statusbar">
+        <div><span class="status-dot" aria-hidden="true"></span><span id="ready-state">Ready</span></div>
+        <span id="safety-state">Dry run — no RF emitted</span>
+      </footer>
+    </div>
+  </body>
+</html>
