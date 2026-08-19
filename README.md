@@ -30,6 +30,23 @@ amplifier stays disabled, and antenna-port power stays disabled.
 IQ envelope extraction and capture-to-`.sub` reconstruction are planned next;
 see [the implementation plan](docs/IMPLEMENTATION_PLAN.md).
 
+## Interface
+
+These views were captured from the current local application with RF transmit
+locked and passive monitoring stopped.
+
+### Flow Builder
+
+![Concert LED Bracelet Studio Flow Builder](docs/screenshots/flow-builder.png)
+
+### Music Mode
+
+![Concert LED Bracelet Studio Music Mode](docs/screenshots/music-mode.png)
+
+### Mobile Flow Builder
+
+<img src="docs/screenshots/mobile-flow-builder.png" alt="Concert LED Bracelet Studio mobile Flow Builder" width="390">
+
 ## Install
 
 Python 3.10 or newer is sufficient for conversion and inspection. Music Mode
